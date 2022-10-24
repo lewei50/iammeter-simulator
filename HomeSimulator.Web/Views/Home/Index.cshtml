@@ -1,0 +1,22 @@
+﻿
+@{
+  ViewData["Title"] = "Overview";
+  ViewBag.MenuName = "index";
+}
+<script>
+  function setStatus(id, status) {
+    $.getJSON('/action/loadstatus/' + id + '?status=' + status, function (r) {
+      showResult(r, reloadIndex);
+    });
+  }
+  $(function(){
+    setInterval(reloadIndex,6000);
+    reloadIndex();
+  });
+  function reloadIndex(){
+    $('#indexDiv').load('/home/indexpartial');
+  }
+</script>
+<div id="indexDiv" class="container">
+  
+</div>

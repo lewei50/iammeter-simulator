@@ -1,0 +1,75 @@
+@model Inverter
+@{
+    Layout = null;
+    var inverter = ViewData.Model;
+}
+
+@if (inverter.SourceType == (int)SourceTypeEnums.Simulation)
+{
+    var config = JsonConvert.DeserializeObject<InverterSimulatorDTO>(inverter.SourceConfigJson??"");
+    <div class="mb-3">
+    <label for="" class="form-label">Rated Power(W)</label>
+    <input type="number" name="ratedPower" class="form-control" placeholder="Rated Power" value="@(config.RatedPower)" />
+</div>
+
+    <div class="mb-3">
+    <label class="form-label">Location:</label>
+    <div class="input-group">
+        @{
+                var locationTypeList = CommonHelper.GetEnumList<LocationTypeEnums>();
+                foreach (var item in locationTypeList)
+                {
+                    var v= (int)item;
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" id="LocationType@(v)" type="radio" name="LocationType"
+                    value="@(v)" @(((int)config.LocationType) == v?"checked":"")>
+                        <label class="form-check-label" for="LocationType@(v)">@(CommonHelper.GetEnumDescription(item))</label>
+                    </div>
+                }
+            }
+
+        </div>
+    </div>
+
+    <div class="mb-3">
+    <label class="form-label">Daily sunshine duration:</label>
+    <div class="input-group">
+        @Html.TextBox("MinHour",config.MinHour,new{Class="form-control",Type="number"})
+        <span class="input-group-text">Hours</span>
+        ->
+        @Html.TextBox("MaxHour",config.MaxHour,new{Class="form-control",Type="number"})
+        <span class="input-group-text">Hours</span>
+    </div>
+    </div>
+
+}
+@if (inverter.SourceType == (int)SourceTypeEnums.IAMMETERCloud)
+{
+    var config = JsonConvert.DeserializeObject<InverterIAMMETERCloudDTO>(inverter.SourceConfigJson??"");
+
+    <div class="mb-3">
+        <label for="" class="form-label">SN</label>
+        <input type="text" name="SN" class="form-control" placeholder="SN" value="@(config.SN)" />
+    </div>
+    <div class="mb-3">
+        <label for="" class="form-label">Data Index</label>
+        <input type="number" name="DataIndex" class="form-control" min="0" max="3" placeholder="DataIndex" value="@(config.DataIndex)" />
+    </div>
+
+}
+
+@if (inverter.SourceType == (int)SourceTypeEnums.IAMMETERLocal)
+{
+    var config = JsonConvert.DeserializeObject<InverterIAMMETERLocalDTO>(inverter.SourceConfigJson??"");
+
+    <div class="mb-3">
+        <label for="" class="form-label">IPAddress</label>
+        <input type="text" name="IPAddress" class="form-control" placeholder="IPAddress" value="@(config.IPAddress)" />
+    </div>
+    <div class="mb-3">
+        <label for="" class="form-label">Data Index</label>
+        <input type="number" name="DataIndex" class="form-control" min="0" max="3" placeholder="DataIndex" value="@(config.DataIndex)" />
+    </div>
+
+}
+

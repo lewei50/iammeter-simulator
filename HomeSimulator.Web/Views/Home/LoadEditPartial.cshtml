@@ -1,0 +1,166 @@
+@model Load
+@{
+    Layout = null;
+    var load = ViewData.Model;
+    if (load.RunTimeDetails == null)
+    {
+        load.RunTimeDetails = new List<RunTimeDetail>();
+    }
+}
+<style>
+    .editRow input{
+        max-width: 150px;
+    }
+</style>
+<script>
+    $(function () {
+        $('[name=RunMode]').click(function () {
+            var timing = $('#runmode1').is(':checked');
+            if (timing)
+                $('#detailDiv').show();
+            else
+                $('#detailDiv').hide();
+
+        });
+    });
+    function addDetail(){
+        var count = $('.editRow').length;
+        var html=`<tr id="rd999" class="editRow" >
+                    <td>
+                        <div class="input-group">
+                            <input type="time" name="details[999].Start" class="form-control">
+                            ~
+                            <input type="time" name="details[999].End" class="form-control">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <input type="number" name="details[999].MinMinutes" class="form-control">
+                            ~
+                            <input type="number" name="details[999].MaxMinutes" class="form-control">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="button" onclick="removeDetail(999)" class="btn btn-sm btn-danger"
+                        value="Delete" />
+                    </td>
+                </tr>`.replace(/999/g,count);
+        $('#bottomTR').before(html);
+    }
+    function removeDetail(i){
+        $('#rd'+i).remove();
+        var count = $('.editRow').length;
+        for(var j=0;j<count;j++){
+            $($('.editRow')[j]).attr('id','rd'+j);
+            $($('#rd'+j+' input')[0]).attr('name','details['+j+'].Start')
+            $($('#rd'+j+' input')[1]).attr('name','details['+j+'].End')
+            $($('#rd'+j+' input')[2]).attr('name','details['+j+'].MinMinutes')
+            $($('#rd'+j+' input')[3]).attr('name','details['+j+'].MaxMinutes')
+            $($('#rd'+j+' input')[4]).attr('onclick','removeDetail('+j+')')
+        }
+    }
+</script>
+<div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">@(ViewData.Model.Id==0?"New":"Edit") Load</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <form id="loadForm" action="/action/load/@(ViewData.Model.Id)" class="row g-3">
+        <div class="col-md-6">
+            <label class="col-form-label">Name:</label>
+            @Html.TextBoxFor(o=>o.Name,new{Class="form-control"})
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">Power:</label>
+            <div class="input-group">
+                @Html.TextBoxFor(o=>o.MinPower,new{Class="form-control",Type="number"})
+                <span class="input-group-text">W</span>
+                ->
+                @Html.TextBoxFor(o=>o.MaxPower,new{Class="form-control",Type="number"})
+                <span class="input-group-text">W</span>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">Run Mode:</label>
+            <div class="input-group">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="runmode0" type="radio" name="RunMode"
+                        @(load.RunMode==0?"checked":"") value="0">
+                    <label class="form-check-label" for="runmode0">Manual</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="runmode1" type="radio" name="RunMode"
+                        @(load.RunMode==1?"checked":"") value="1">
+                    <label class="form-check-label" for="runmode1">Timing</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <label class="col-form-label">Set Mode:</label>
+            <div class="input-group">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="setmode0" type="radio" name="SetMode"
+                        @(load.SetMode==0?"checked":"") value="0">
+                    <label class="form-check-label" for="setmode0">Cannot</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="setmode1" type="radio" name="SetMode"
+                        @(load.SetMode==1?"checked":"") value="1">
+                    <label class="form-check-label" for="setmode1">Configurable</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12" id="detailDiv" style="display: @(load.RunMode==0?"none":"block");">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Time</th>
+                        <th scope="col">Opend Minutes</th>
+                        <th scope="col" width="120">Operation</th>
+                    </tr>@{
+                        var i=0;
+                    }
+                    @foreach (var detail in load.RunTimeDetails)
+                    {
+                        <tr class="editRow" id="rd@(i)">
+                            <td>
+                                <div class="input-group">
+                                    <input type="time" name="details[@(i)].Start" value="@(detail.Start)" class="form-control">
+                                    ->
+                                    <input type="time" name="details[@(i)].End" value="@(detail.End)" class="form-control">
+                                </div>
+
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="number" name="details[@(i)].MinMinutes" value="@(detail.MinMinutes)"
+                                    class="form-control">
+                                    ->
+                                    <input type="number" name="details[@(i)].MaxMinutes" value="@(detail.MaxMinutes)"
+                                    class="form-control">
+                                </div>
+
+                            </td>
+                            <td>
+                                <input type="button" onclick="removeDetail(@(i))" class="btn btn-sm btn-danger"
+                                value="Delete" />
+                            </td>
+                        </tr>
+                        i++;
+                    }
+                    <tr id="bottomTR">
+                        <td colspan="3">
+                            <input type="button" onclick="addDetail()" class="btn btn-sm btn-info" value=" + " />
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-primary" onclick="saveForm('loadForm',reloadLoadList)">Save</button>
+</div>

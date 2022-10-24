@@ -1,0 +1,189 @@
+﻿@inject MyContext _myContext
+@{
+    ViewData["Title"] = "Setting";
+    ViewBag.MenuName = "setting";
+    var config = _myContext.Configs.FirstOrDefault() ?? new Config();
+    var inverter = _myContext.Inverters.FirstOrDefault() ?? new Inverter();
+    var loads = _myContext.Loads.ToList();
+}
+<script>
+    var myModal;
+    function saveForm(formId, callback) {
+        var url = $('#' + formId).attr('action');
+        console.log(url);
+        $.post(url, $('#' + formId).serialize(), function (r) {
+            showResult(r, callback);
+        });
+
+    }
+    function openModal(id) {
+        myModal = new bootstrap.Modal($('#loadModal'));
+        $('.modal-content').html(`<div class="d-flex justify-content-center">
+                <div class="spinner-grow text-info" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>`);
+        myModal.show();
+        $('.modal-content').load('/home/loadeditpartial/' + id);
+    }
+    function reloadLoadList() {
+        //var myModal = new bootstrap.Modal($('#loadModal'));
+        if (myModal)
+            myModal.hide();
+        $('#load').load('/home/loadlistpartial?r=' + Math.random());
+    }
+    function deleteLoad(id) {
+        if (confirm('Are you sure you want to delete it?'))
+            $.getJSON('/action/loaddelete/' + id, function (r) {
+                if (r.successful == true) {
+                    successMessage(r.message);
+                    reloadLoadList();
+                }
+                else
+                    warnMessage(r.message);
+            })
+    }
+    function clearMeter() {
+        if (confirm('Are you sure you want to clear the meter data?'))
+            $.getJSON('/action/clearmeter', function (r) {
+                showResult(r);
+            })
+    }
+    function changeSourceType() {
+        $('#sourceTypeSettingDiv').load('/home/invertersourcetypepartial', $('#inverterForm').serialize());
+    }
+    function exportData() {
+        window.open('/action/exportloaddata');
+    }
+    function selectImportFile() {
+        $('#loadImportFile').click();
+    }
+    function importData() {
+        if (confirm('Are you sure you want to import the data in the file?')) {
+            if ($('#loadImportFile')[0].files.length > 0) {
+                var selectedFile = $('#loadImportFile')[0].files[0];
+                var reader = new FileReader();
+                reader.readAsText(selectedFile);
+                reader.onload = oFREvent => {
+                    var jsonText = oFREvent.target.result;
+                    $.post('/action/importloaddata', { jsonText }, function (r) {
+                        showResult(r, reloadLoadList);
+                    });
+                };
+            }
+        }
+        $('#loadImportFile').val('')
+    }
+
+    function clearLoadData() {
+        if (confirm('Are you sure you want to clear all the load data?'))
+            $.getJSON('/action/clearloaddata', function (r) {
+                showResult(r,reloadLoadList);
+            })
+    }
+</script>
+<style>
+    .form-label {
+        font-weight: bold;
+    }
+</style>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button"
+            role="tab" aria-controls="config" aria-selected="true">Global</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="inverter-tab" data-bs-toggle="tab" data-bs-target="#inverter" type="button"
+            role="tab" aria-controls="inverter" aria-selected="false">Inverter</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="load-tab" data-bs-toggle="tab" data-bs-target="#load" type="button" role="tab"
+            aria-controls="load" aria-selected="false">Loads</button>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent" style="padding-top: 10px;">
+    <div class="tab-pane fade show active" id="config" role="tabpanel" aria-labelledby="config-tab">
+        <form id="configForm" action="/action/config">
+            <div class="mb-3">
+                <label for="" class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" value="@(config.Username)"
+                    placeholder="Username">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" placeholder="Password">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Confirm Password</label>
+                <input type="password" name="password2" class="form-control" placeholder="Confirm Password">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">IAMMMETER SN</label>
+                <input type="text" name="sn" class="form-control" placeholder="IAMMETER SN" value="@(config.SN)" />
+            </div>
+
+            <div class="mb-3">
+                <input type="button" onclick="saveForm('configForm')" class="btn btn-primary" value="Save" />
+                <input type="button" onclick="clearMeter()" class="btn btn-danger" value="Clear meter data" />
+            </div>
+        </form>
+    </div>
+    <div class="tab-pane fade" id="inverter" role="tabpanel" aria-labelledby="inverter-tab">
+        <form id="inverterForm" action="/action/inverter">
+            <div class="mb-3">
+                <label for="" class="form-label">Name</label>
+                <input type="text" name="name" class="form-control" placeholder="Name" value="@(inverter.Name)">
+            </div>
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" @(inverter.Status==true?"checked":"") name="Status"
+                        value="true" role="switch" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault">Turn on autorun</label>
+                </div>
+            </div>
+
+
+            <div class="mb-3">
+                <label class="form-label">Data Source Type:</label>
+                <div class="input-group">
+                    @{
+                        var sourceTypeList = CommonHelper.GetEnumList<SourceTypeEnums>();
+                        foreach (var item in sourceTypeList)
+                        {
+                            var v = (int)item;
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="SourceType@(v)" type="radio" name="SourceType" value="@(v)"
+                                @(inverter.SourceType == v?"checked":"") onclick="changeSourceType()">
+                                <label class="form-check-label"
+                                for="SourceType@(v)">@(CommonHelper.GetEnumDescription(item))</label>
+                            </div>
+                        }
+                    }
+
+                </div>
+            </div>
+            <div id="sourceTypeSettingDiv">
+                @{
+                    Html.RenderPartial("InverterSourceTypePartial", inverter);
+                }
+            </div>
+
+
+            <div class="mb-3">
+                <input type="button" onclick="saveForm('inverterForm')" class="btn btn-primary" value="Save" />
+            </div>
+        </form>
+    </div>
+    <div class="tab-pane fade" id="load" role="tabpanel" aria-labelledby="load-tab">
+        @{
+            Html.RenderPartial("LoadListPartial", loads);
+        }
+    </div>
+</div>
+<div class="modal fade" id="loadModal" tabindex="-1" aria-labelledby="loadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>

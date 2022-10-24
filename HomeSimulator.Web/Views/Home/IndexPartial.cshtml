@@ -1,0 +1,92 @@
+@inject MyContext _myContext;
+@{
+    Layout = null;
+    ViewData["Title"] = "Overview";
+    ViewBag.MenuName = "index";
+    var a = _myContext.Meters.FirstOrDefault(o => o.Name == "A");
+    var b = _myContext.Meters.FirstOrDefault(o => o.Name == "B");
+    var loads = _myContext.Loads.ToList();
+}
+
+<h4>Meter (@a.LastUpdateTime)</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Data</th>
+            <th scope="col">A(Solar)</th>
+            <th scope="col">B(Grid)</th>
+            <th scope="col">C(Not connected)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row">Voltage</th>
+            <td>@a.Voltage.ToDecimalString(1) V</td>
+            <td>@b.Voltage.ToDecimalString(1) V</td>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row">Current</th>
+            <td>@a.Current.ToDecimalString(1) A</td>
+            <td>@b.Current.ToDecimalString(1) A</td>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row">Power</th>
+            <td>@a.Power.ToDecimalString(1) W</td>
+            <td>@b.Power.ToDecimalString(1) W</td>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row">Energy</th>
+            <td>@a.Energy.ToDecimalString() kWh</td>
+            <td>@b.Energy.ToDecimalString() kWh</td>
+            <td></td>
+        </tr>
+        <tr>
+            <th scope="row">Reverse Energy</th>
+            <td>@a.ReverseEnergy.ToDecimalString() kWh</td>
+            <td>@b.ReverseEnergy.ToDecimalString() kWh</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+<h4>Loads</h4>
+<div>
+    @foreach (var load in loads)
+    {
+        <div class="card @(load.Status?"text-white bg-info":"light")"
+        style="width: 200px;height:140px;clear:none;display:block;float:left;margin-right:20px;margin-bottom:20px;text-align:center">
+            <div class="card-body">
+                <h5 class="card-title">
+                    @if (load.Status == true)
+                    {
+                        <span>@load.LastPower.ToDecimalString() W</span>
+                    }
+                    else
+                    {
+                        <span>&nbsp;</span>
+                    }
+                </h5>
+                <p class="card-text">@load.Name</p>
+                @if (load.RunMode == (int)RunModeEnums.Manual)
+                {
+                    if (load.Status == true)
+                    {
+                        <a href="#" class="btn btn-sm btn-primary" onclick="setStatus(@(load.Id),false)">Close</a>
+                    }
+                    else
+                    {
+                        <a href="#" class="btn btn-sm btn-primary" onclick="setStatus(@(load.Id),true)">Open</a>
+                    }
+                }
+                else
+                {
+                    @* <div class="btn btn-sm btn-light">&nbsp;
+                         @(load.Status?"Opened":"Closed") 
+                    </div> *@
+                }
+            </div>
+        </div>
+    }
+</div>

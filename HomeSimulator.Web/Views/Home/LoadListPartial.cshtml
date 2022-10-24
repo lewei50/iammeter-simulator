@@ -1,0 +1,53 @@
+@{
+    Layout = null;
+}
+@model List<Load>
+
+<button type="button" onclick="openModal(0)" class="btn btn-primary">New Load</button>
+<button type="button" onclick="exportData()" class="btn btn-info">Export</button>
+<button type="button" onclick="selectImportFile()" class="btn btn-warning">Import...</button>
+<button type="button" onclick="clearLoadData()" class="btn btn-danger">Clear all data</button>
+<form method="post" enctype="application/x-www-form-urlencoded" style="display: none;">
+    <input type="file" name="loadImportFile" id="loadImportFile" onchange="importData()" accept=".json,text/json" />
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Current Power</th>
+            <th scope="col">Power Range</th>
+            <th scope="col">Run Mode</th>
+            <th scope="col">Set Mode</th>
+            <th scope="col">Status</th>
+            <th scope="col">Operation</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var load in ViewData.Model)
+        {
+            <tr>
+                <th scope="row">@load.Name</th>
+                <td>@load.LastPower.ToDecimalString(1) W</td>
+                @if (load.MinPower == load.MaxPower)
+                {
+                    <td>@load.MinPower W</td>
+                }
+                else
+                {
+                    <td>@load.MinPower W ~ @load.MaxPower W</td>
+                }
+                <td>@((RunModeEnums)load.RunMode)</td>
+                <td>@((SetModeEnums)load.SetMode)</td>
+                <td>@(load.Status==true?"Opend":"Closed")</td>
+                <td>
+                    <input type="button" onclick="openModal(@(load.Id))" class="btn btn-sm btn-info" value="Edit" />
+                    <input type="button" onclick="deleteLoad(@(load.Id))" class="btn btn-sm btn-danger" value="Delete" />
+
+                </td>
+            </tr>
+        }
+
+
+    </tbody>
+</table>

@@ -1,0 +1,35 @@
+﻿@inject MyContext _myContext;
+@{
+  ViewData["Title"] = "Api History";
+  ViewBag.MenuName = "apihistory";
+  var list = _myContext.ApiHistory.OrderByDescending(o=>o.AddTime).Take(200).ToList();
+}
+<div class="container">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Data</th>
+        <th scope="col">IP Address</th>
+        <th scope="col">Time</th>
+        <th scope="col">Successful</th>
+        <th scope="col">Message</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var history in list)
+      {
+        <tr>
+          <th scope="row">@history.Name</th>
+          <td>@history.Data</td>
+          <td>@history.IPAddress</td>
+          <td>@history.AddTime</td>
+          <td>@(history.Result==true?"Yes":"No")</td>
+          <td>@(history.Message)</td>
+        </tr>
+      }
+
+
+    </tbody>
+  </table>
+</div>
