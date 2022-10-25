@@ -1,0 +1,50 @@
+name: Docker Image CI
+
+on:
+  push:
+    #branches: [ main ]
+    tags:
+      - '*.*'
+  #pull_request: ~
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker buildx
+      env:
+        # Use ${{ secrets.GITHUB_TOKEN }} by default.
+        # Use GitHub Personal Access Token ${{ secrets.REPO_ACCESS_TOKEN }} if you
+        # want to trigger another workflow by this step.
+        GITHUB_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+        WITH_V: false
+      run: |
+        docker run --privileged --rm docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
+        docker run --rm --privileged tonistiigi/binfmt:latest --install all
+        docker buildx create --use --name=mybuilder-cn --driver docker-container --driver-opt image=dockerpracticesig/buildkit:master
+    - name: Build Push the Docker Image
+      run: |
+        echo "======================="
+        echo "tag:"  ${{ github.ref }}
+        echo "======================="
+        # Strip git ref prefix from version
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+        # Strip "v" prefix from tag name
+        [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+        # Use Docker `latest` tag convention
+        [ "$VERSION" == "main" ] && VERSION=latest
+        
+        DOCKER_REG="docker.io/iammeter/iammeter-simulator"
+        echo IMAGE_ID=$DOCKER_REG
+        echo VERSION=$VERSION
+        
+        #docker login --username yourname --password 123
+        echo "${{ secrets.PASSWORD }}" | docker login $REG -u "${{ secrets.USERNAME }}" --password-stdin
+        #docker tag image $DOCKER_REG:$VERSION
+        #docker push $DOCKER_REG:$VERSION
+        docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t $DOCKER_REG:$VERSION -t $DOCKER_REG:latest . --push
+
