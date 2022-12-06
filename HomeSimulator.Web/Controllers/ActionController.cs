@@ -25,7 +25,7 @@ public class ActionController : Controller
     public ActionResult Config(Config data, string password2)
     {
         var result = new Result();
-        var entity = _myContext.Configs.FirstOrDefault();
+        var entity = _myContext.Configs.OrderBy(o => o.Id).FirstOrDefault();
         if (data.Password != password2)
             return Json(result.Return("Invalid password"));
         if (entity == null)
@@ -51,7 +51,7 @@ public class ActionController : Controller
     public ActionResult Inverter(Inverter data, bool? status, InverterSimulatorDTO dto0, InverterIAMMETERCloudDTO dto1, InverterIAMMETERLocalDTO dto2)
     {
         var result = new Result();
-        var entity = _myContext.Inverters.FirstOrDefault();
+        var entity = _myContext.Inverters.OrderBy(o => o.Id).FirstOrDefault();
         if (entity == null)
         {
             result.Message = "Invalid data: inverter";
@@ -83,7 +83,7 @@ public class ActionController : Controller
             }
             if (oldSourceType != entity.SourceType)
             {
-                var meter = _myContext.Meters.First(o => o.Name == "A");
+                var meter = _myContext.Meters.OrderBy(o => o.Id).First(o => o.Name == "A");
                 meter.LastUpdateTime = null;
             }
             _myContext.SaveChanges();
@@ -109,7 +109,7 @@ public class ActionController : Controller
         }
         else
         {
-            entity = _myContext.Loads.FirstOrDefault(o => o.Id == data.Id);
+            entity = _myContext.Loads.OrderBy(o => o.Id).FirstOrDefault(o => o.Id == data.Id);
             if (entity == null)
             {
                 result.Message = "Invalid data: inverter";
@@ -147,7 +147,7 @@ public class ActionController : Controller
     public ActionResult LoadDelete(long? Id)
     {
         var result = new Result();
-        var entity = _myContext.Loads.FirstOrDefault(o => o.Id == Id);
+        var entity = _myContext.Loads.OrderBy(o => o.Id).FirstOrDefault(o => o.Id == Id);
         if (entity == null)
         {
             result.Message = "Invalid data: load";
@@ -165,7 +165,7 @@ public class ActionController : Controller
     public ActionResult LoadStatus(long? Id, bool? status)
     {
         var result = new Result();
-        var entity = _myContext.Loads.FirstOrDefault(o => o.RunMode == 0 && o.Id == Id);
+        var entity = _myContext.Loads.OrderBy(o => o.Id).FirstOrDefault(o => o.RunMode == 0 && o.Id == Id);
         if (entity == null)
         {
             result.Message = "Invalid data: load";
@@ -214,6 +214,7 @@ public class ActionController : Controller
                 RunMode = load.RunMode,
                 Status = load.Status,
                 SetMode = load.SetMode,
+                ToMeter = load.ToMeter,
             };
             if (load.RunTimeDetails != null)
                 dto.RunTimeDetails = load.RunTimeDetails.Select(o => new RunTimeDetailExportDTO
@@ -259,6 +260,7 @@ public class ActionController : Controller
                     RunMode = item.RunMode,
                     Status = item.Status,
                     SetMode = item.SetMode,
+                    ToMeter = item.ToMeter,
                 };
                 if (item.RunTimeDetails != null)
                     load.RunTimeDetails = item.RunTimeDetails.Select(o => new RunTimeDetail

@@ -27,6 +27,10 @@ public class Load
     [Column(TypeName = "datetime")]
     public DateTime? LastUpdateTime { get; set; }
 
+    // connect to meter c for uploading
+    public bool  ToMeter{ get; set; }
+
+
     public virtual List<RunTimeDetail>? RunTimeDetails { get; set; }
 
     public void SetStatus(bool? status, DateTime? time = null)

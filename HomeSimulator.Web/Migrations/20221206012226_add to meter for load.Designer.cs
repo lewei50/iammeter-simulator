@@ -3,6 +3,7 @@ using System;
 using HomeSimulator.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeSimulator.Web.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20221206012226_add to meter for load")]
+    partial class addtometerforload
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.10");
@@ -75,8 +77,8 @@ namespace HomeSimulator.Web.Migrations
                         new
                         {
                             Id = 1L,
-                            AccessToken = "65553614ffe446c6a48754f78a2eddd2",
-                            ModifyTime = new DateTime(2022, 12, 6, 9, 40, 27, 950, DateTimeKind.Local).AddTicks(5330),
+                            AccessToken = "4fec0ff0e0054a8b9dc29cbe65966a73",
+                            ModifyTime = new DateTime(2022, 12, 6, 9, 22, 25, 776, DateTimeKind.Local).AddTicks(5950),
                             Password = "jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=",
                             SN = "NeedToBeSet",
                             Username = "admin"
@@ -271,11 +273,6 @@ namespace HomeSimulator.Web.Migrations
                         {
                             Id = 2L,
                             Name = "B"
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            Name = "C"
                         });
                 });
 

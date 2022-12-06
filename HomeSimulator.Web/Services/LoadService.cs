@@ -21,8 +21,13 @@ public class LoadService
         {
             SetLoad(load, time.Value);
         }
-        var gridMeter = _myContext.Meters.First(o => o.Name == "B");
-        var inverterMeter = _myContext.Meters.First(o => o.Name == "A");
+        var gridMeter = _myContext.Meters.OrderBy(o => o.Id).First(o => o.Name == "B");
+        var inverterMeter = _myContext.Meters.OrderBy(o => o.Id).First(o => o.Name == "A");
+
+        var loadMeter = _myContext.Meters.OrderBy(o => o.Id).First(o => o.Name == "C");
+        var specialLoadPower = loadList.Where(o => o.Status == true && o.ToMeter == true).Sum(o => o.LastPower);
+        SetSpecialLoadData(loadMeter, specialLoadPower, time);
+
         var loadPower = loadList.Where(o => o.Status == true).Sum(o => o.LastPower);
         var inverterPower = inverterMeter.Power ?? 0;
         var power = (loadPower ?? 0) - inverterPower;
@@ -90,6 +95,30 @@ public class LoadService
         gridMeter.LastUpdateTime = time;
         _myContext.SaveChanges();
         return data;
+    }
+
+
+    // to meter
+    public void SetSpecialLoadData(Meter meter, decimal? power, DateTime? time)
+    {
+        if (time == null) time = DateTime.Now;
+
+        if (meter.LastUpdateTime == null)
+        {
+            meter.Energy = 0;
+        }
+        else
+        {
+            var energy = 0.5m * (power + meter.Power) * (decimal)(time.Value - meter.LastUpdateTime.Value).TotalSeconds / 3600000;
+            if (energy < 0) energy = 0;
+            meter.Energy = (meter.Energy ?? 0) + energy;
+        }
+
+        meter.Voltage = 230;
+        meter.Power = power;
+        meter.ReverseEnergy = 0;
+        meter.Current = power / 230;
+        meter.LastUpdateTime = time;
     }
 
     public void SetLoad(Load load, DateTime time)

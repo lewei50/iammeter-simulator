@@ -3,8 +3,9 @@
     Layout = null;
     ViewData["Title"] = "Overview";
     ViewBag.MenuName = "index";
-    var a = _myContext.Meters.FirstOrDefault(o => o.Name == "A");
-    var b = _myContext.Meters.FirstOrDefault(o => o.Name == "B");
+    var a = _myContext.Meters.OrderBy(o => o.Id).FirstOrDefault(o => o.Name == "A");
+    var b = _myContext.Meters.OrderBy(o => o.Id).FirstOrDefault(o => o.Name == "B");
+    var c = _myContext.Meters.OrderBy(o => o.Id).FirstOrDefault(o => o.Name == "C");
     var loads = _myContext.Loads.ToList();
 }
 
@@ -15,7 +16,7 @@
             <th scope="col">Data</th>
             <th scope="col">A(Solar)</th>
             <th scope="col">B(Grid)</th>
-            <th scope="col">C(Not connected)</th>
+            <th scope="col">C(Load[To Meter])</th>
         </tr>
     </thead>
     <tbody>
@@ -23,31 +24,31 @@
             <th scope="row">Voltage</th>
             <td>@a.Voltage.ToDecimalString(1) V</td>
             <td>@b.Voltage.ToDecimalString(1) V</td>
-            <td></td>
+            <td>@c.Voltage.ToDecimalString(1) V</td>
         </tr>
         <tr>
             <th scope="row">Current</th>
             <td>@a.Current.ToDecimalString(1) A</td>
             <td>@b.Current.ToDecimalString(1) A</td>
-            <td></td>
+            <td>@c.Current.ToDecimalString(1) A</td>
         </tr>
         <tr>
             <th scope="row">Power</th>
             <td>@a.Power.ToDecimalString(1) W</td>
             <td>@b.Power.ToDecimalString(1) W</td>
-            <td></td>
+            <td>@c.Power.ToDecimalString(1) W</td>
         </tr>
         <tr>
             <th scope="row">Energy</th>
             <td>@a.Energy.ToDecimalString() kWh</td>
             <td>@b.Energy.ToDecimalString() kWh</td>
-            <td></td>
+            <td>@c.Energy.ToDecimalString() kWh</td>
         </tr>
         <tr>
             <th scope="row">Reverse Energy</th>
             <td>@a.ReverseEnergy.ToDecimalString() kWh</td>
             <td>@b.ReverseEnergy.ToDecimalString() kWh</td>
-            <td></td>
+            <td>@c.ReverseEnergy.ToDecimalString() kWh</td>
         </tr>
     </tbody>
 </table>

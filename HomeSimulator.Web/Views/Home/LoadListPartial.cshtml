@@ -19,6 +19,7 @@
             <th scope="col">Power Range</th>
             <th scope="col">Run Mode</th>
             <th scope="col">Set Mode</th>
+            <th scope="col">To Meter</th>
             <th scope="col">Status</th>
             <th scope="col">Operation</th>
         </tr>
@@ -39,6 +40,7 @@
                 }
                 <td>@((RunModeEnums)load.RunMode)</td>
                 <td>@((SetModeEnums)load.SetMode)</td>
+                <td>@(load.ToMeter==true?"Yes":"NO")</td>
                 <td>@(load.Status==true?"Opend":"Closed")</td>
                 <td>
                     <input type="button" onclick="openModal(@(load.Id))" class="btn btn-sm btn-info" value="Edit" />

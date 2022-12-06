@@ -13,8 +13,8 @@ public class InverterService
         _myContext = myContext;
         _logger = logger;
 
-        inverter = _myContext.Inverters.First();
-        meter = _myContext.Meters.First(o => o.Name == "A");
+        inverter = _myContext.Inverters.OrderBy(o => o.Id).First();
+        meter = _myContext.Meters.OrderBy(o => o.Id).First(o => o.Name == "A");
     }
     Meter meter;
     Inverter inverter;

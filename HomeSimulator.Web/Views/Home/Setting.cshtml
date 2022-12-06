@@ -2,8 +2,8 @@
 @{
     ViewData["Title"] = "Setting";
     ViewBag.MenuName = "setting";
-    var config = _myContext.Configs.FirstOrDefault() ?? new Config();
-    var inverter = _myContext.Inverters.FirstOrDefault() ?? new Inverter();
+    var config = _myContext.Configs.OrderBy(o => o.Id).FirstOrDefault() ?? new Config();
+    var inverter = _myContext.Inverters.OrderBy(o => o.Id).FirstOrDefault() ?? new Inverter();
     var loads = _myContext.Loads.ToList();
 }
 <script>

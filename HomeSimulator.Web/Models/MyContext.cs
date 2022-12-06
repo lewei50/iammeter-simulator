@@ -47,6 +47,7 @@ public class MyContext : DbContext
 
         modelBuilder.Entity<Meter>().HasData(new Meter { Id = 1, Name = "A" });
         modelBuilder.Entity<Meter>().HasData(new Meter { Id = 2, Name = "B" });
+        modelBuilder.Entity<Meter>().HasData(new Meter { Id = 3, Name = "C" });
 
         modelBuilder.Entity<Load>().HasData(new Load
         {
@@ -132,6 +133,7 @@ public class MyContext : DbContext
             Status = false,
             SetMode = (int)SetModeEnums.Configurable,
             LastPower = 2300,
+            ToMeter = true,
             LastUpdateTime = null
         });
     }

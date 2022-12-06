@@ -111,7 +111,7 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="col-12" id="detailDiv" style="display: @(load.RunMode==0?"none":"block");">
             <table class="table">
                 <thead>
@@ -157,6 +157,22 @@
                     </tr>
                 </thead>
             </table>
+        </div>
+
+        <div class="col-md-6">
+            <label class="col-form-label">To Meter:</label>
+            <div class="input-group">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="tometer0" type="radio" name="ToMeter"
+                        @(load.ToMeter?"checked":"") value="true">
+                    <label class="form-check-label" for="tometer0">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="tometer1" type="radio" name="ToMeter"
+                        @(load.ToMeter==false?"checked":"") value="false">
+                    <label class="form-check-label" for="tometer1">NO</label>
+                </div>
+            </div>
         </div>
     </form>
 </div>

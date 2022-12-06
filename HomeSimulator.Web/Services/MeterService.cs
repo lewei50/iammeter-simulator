@@ -27,9 +27,10 @@ public class MeterService
     public MeterUploadDTO GetMeterDataFromDB()
     {
         var rt = new MeterUploadDTO();
-        var config = _myContext.Configs.First();
-        var a = _myContext.Meters.First(o => o.Name == "A");
-        var b = _myContext.Meters.First(o => o.Name == "B");
+        var config = _myContext.Configs.OrderBy(o => o.Id).First();
+        var a = _myContext.Meters.OrderBy(o => o.Id).First(o => o.Name == "A");
+        var b = _myContext.Meters.OrderBy(o => o.Id).First(o => o.Name == "B");
+        var c = _myContext.Meters.OrderBy(o => o.Id).First(o => o.Name == "C");
         rt.version = "homesimulator";
         rt.SN = config.SN;
         rt.mac=$"B0F1923A38F1";
@@ -38,7 +39,8 @@ public class MeterService
         rt.Datas = new decimal?[][]{
                 new decimal?[]{a.Voltage.ToDecimalNum(1),a.Current.ToDecimalNum(1),a.Power.ToDecimalNum(1),a.Energy.ToDecimalNum(),a.ReverseEnergy.ToDecimalNum(),six,seven},
                 new decimal?[]{b.Voltage.ToDecimalNum(1),b.Current.ToDecimalNum(1),b.Power.ToDecimalNum(1),b.Energy.ToDecimalNum(),b.ReverseEnergy.ToDecimalNum(),six,seven},
-                new decimal?[]{0,0,0,0,0,six,seven},
+                new decimal?[]{c.Voltage.ToDecimalNum(1),c.Current.ToDecimalNum(1),c.Power.ToDecimalNum(1),c.Energy.ToDecimalNum(),c.ReverseEnergy.ToDecimalNum(),six,seven},
+                
         };
         return rt;
 

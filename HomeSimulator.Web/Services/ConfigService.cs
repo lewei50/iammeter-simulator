@@ -14,7 +14,7 @@ public class ConfigService
 
     public Config GetConfig()
     {
-        return _myContext.Configs.First();
+        return _myContext.Configs.OrderBy(o => o.Id).First();
     }
 
     public bool ValidateUser(string username, string password)

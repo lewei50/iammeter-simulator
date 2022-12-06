@@ -25,7 +25,7 @@ public class APIController : Controller
     public IActionResult SetLoadPower(decimal? v)
     {
         var result = new Result();
-        var load = _myContext.Loads.FirstOrDefault(o => o.SetMode == 1);
+        var load = _myContext.Loads.OrderBy(o => o.Id).FirstOrDefault(o => o.SetMode == 1);
         if (load == null)
         {
             result.Message = "No configurable loads.";
@@ -53,7 +53,7 @@ public class APIController : Controller
     public IActionResult GetSetPower()
     {
         var result = new Result<decimal>();
-        var load = _myContext.Loads.FirstOrDefault(o => o.SetMode == 1);
+        var load = _myContext.Loads.OrderBy(o => o.Id).FirstOrDefault(o => o.SetMode == 1);
         if (load == null)
         {
             result.Message = "No configurable loads.";

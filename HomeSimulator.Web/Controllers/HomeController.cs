@@ -38,7 +38,7 @@ public class HomeController : Controller
 
     public IActionResult InverterSourceTypePartial(int sourceType)
     {
-        var inverter = _myContext.Inverters.First();
+        var inverter = _myContext.Inverters.OrderBy(o => o.Id).First();
         inverter.SourceType = sourceType;
         return View(inverter);
     }
@@ -59,7 +59,7 @@ public class HomeController : Controller
         Load load = new Load() { };
         if (Id > 0)
         {
-            load = _myContext.Loads.First(o => o.Id == Id);
+            load = _myContext.Loads.OrderBy(o => o.Id).First(o => o.Id == Id);
         }
         return View(load);
     }

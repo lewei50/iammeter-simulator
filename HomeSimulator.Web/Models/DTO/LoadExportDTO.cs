@@ -16,6 +16,9 @@ public class LoadExportDTO
 
     public int SetMode { get; set; }
 
+    public bool ToMeter { get; set; }
+
+
     public List<RunTimeDetailExportDTO>? RunTimeDetails { get; set; }
 
 }
