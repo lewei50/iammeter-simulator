@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 public class LoadService
 {
     private readonly MyContext _myContext;
-    public LoadService(MyContext myContext)
+    private readonly OCPPSocketBackgroundService _oCPPSocketBackgroundService;
+
+    public LoadService(MyContext myContext, OCPPSocketBackgroundService oCPPSocketBackgroundService)
     {
         _myContext = myContext;
+        _oCPPSocketBackgroundService = oCPPSocketBackgroundService;
     }
 
     public Meter SetLoadMeterData(DateTime? time = null)
@@ -29,6 +32,8 @@ public class LoadService
         SetSpecialLoadData(loadMeter, specialLoadPower, time);
 
         var loadPower = loadList.Where(o => o.Status == true).Sum(o => o.LastPower);
+        if(_oCPPSocketBackgroundService.Charger.IsCharging)
+            loadPower+=_oCPPSocketBackgroundService.Charger.Power;
         var inverterPower = inverterMeter.Power ?? 0;
         var power = (loadPower ?? 0) - inverterPower;
         var data = new Meter

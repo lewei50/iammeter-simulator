@@ -14,12 +14,14 @@ public class ActionController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly MyContext _myContext;
     private readonly MeterService _meterService;
+    private readonly OCPPSocketBackgroundService _oCPPSocketBackgroundService;
 
-    public ActionController(ILogger<HomeController> logger, MyContext myContext, MeterService meterService)
+    public ActionController(ILogger<HomeController> logger, MyContext myContext, MeterService meterService, OCPPSocketBackgroundService oCPPSocketBackgroundService)
     {
         _logger = logger;
         _myContext = myContext;
         _meterService = meterService;
+        _oCPPSocketBackgroundService = oCPPSocketBackgroundService;
     }
 
     public ActionResult Config(Config data, string password2)
@@ -96,6 +98,27 @@ public class ActionController : Controller
             result.Successful = true;
             result.Message = "Successfully saved";
         }
+        return Json(result);
+    }
+
+    public ActionResult Charger(Charger data)
+    {
+        var result = new Result();
+        var entity = _myContext.Chargers.OrderBy(o=>o.Id).FirstOrDefault();
+        if (entity == null)
+            _myContext.Chargers.Add(data);
+        else
+        {
+            entity.OCPPServer = data.OCPPServer;
+            entity.ChargePointId = data.ChargePointId;
+            entity.MaxEnergy = data.MaxEnergy;
+            entity.MaxPower = data.MaxPower;
+        }
+        _myContext.SaveChanges();
+        result.Successful = true;
+        result.Message = "Successfully saved";
+        // reset
+        _oCPPSocketBackgroundService.StartAsync();
         return Json(result);
     }
 
@@ -278,6 +301,35 @@ public class ActionController : Controller
         }
         else
             result.Message = "Invalid file data.";
+
+        return Json(result);
+    }
+
+    public ActionResult StartTransaction()
+    {
+        var result = new Result();
+        if (_oCPPSocketBackgroundService.Charger.IsCharging == true)
+            result.Message = "Already started.";
+        else
+        {
+            _oCPPSocketBackgroundService.StartTransaction();
+            result.Successful = true;
+            result.Message = "Successfully started.";
+        }
+        
+        return Json(result);
+    }
+    public ActionResult StopTransaction()
+    {
+        var result = new Result();
+        if (_oCPPSocketBackgroundService.Charger.IsCharging == false)
+            result.Message = "Already stopped.";
+        else
+        {
+            _oCPPSocketBackgroundService.StopTransaction();
+            result.Successful = true;
+            result.Message = "Successfully stopped.";
+        }
 
         return Json(result);
     }

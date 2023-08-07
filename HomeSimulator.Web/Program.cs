@@ -2,8 +2,15 @@ using HomeSimulator.Web.Extensions;
 using HomeSimulator.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using HomeSimulator.Services;
+using Microsoft.Extensions.Logging;
+using NLog.Web;
+using NLog;
+
+var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseNLog();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
@@ -11,7 +18,6 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddMyService();
 
 var app = builder.Build();
-
 app.UseWhen(
     predicate: x => true,// x.Request.Path.StartsWithSegments(new PathString("/")),
     configuration: appBuilder => { appBuilder.UseBasicAuthentication(); }

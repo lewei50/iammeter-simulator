@@ -4,6 +4,7 @@
     ViewBag.MenuName = "setting";
     var config = _myContext.Configs.OrderBy(o => o.Id).FirstOrDefault() ?? new Config();
     var inverter = _myContext.Inverters.OrderBy(o => o.Id).FirstOrDefault() ?? new Inverter();
+    var charger = _myContext.Chargers.OrderBy(o => o.Id).FirstOrDefault() ?? new Charger();
     var loads = _myContext.Loads.ToList();
 }
 <script>
@@ -100,6 +101,12 @@
         <button class="nav-link" id="load-tab" data-bs-toggle="tab" data-bs-target="#load" type="button" role="tab"
             aria-controls="load" aria-selected="false">Loads</button>
     </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="charger-tab" data-bs-toggle="tab" data-bs-target="#charger" type="button" role="tab"
+                aria-controls="charger" aria-selected="false">
+            Charger
+        </button>
+    </li>
 </ul>
 <div class="tab-content" id="myTabContent" style="padding-top: 10px;">
     <div class="tab-pane fade show active" id="config" role="tabpanel" aria-labelledby="config-tab">
@@ -178,6 +185,36 @@
         @{
             Html.RenderPartial("LoadListPartial", loads);
         }
+    </div>
+    <div class="tab-pane fade" id="charger" role="tabpanel" aria-labelledby="charger-tab">
+        <form id="chargerForm" action="/action/charger">
+            <div class="mb-3">
+                <label for="" class="form-label">OCPP Server</label>
+                <input type="text" name="OCPPServer" class="form-control" placeholder="OCPP Server" value="@(charger.OCPPServer)">
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">Charge Point Id</label>
+                <input type="text" name="ChargePointId" class="form-control" placeholder="Charge Point Id" value="@(charger.ChargePointId)">
+            </div>
+            
+            <div class="mb-3">
+                <label for="" class="form-label">
+                    Maximum charging power
+                    (W)
+                </label>
+                <input type="number" name="MaxPower" class="form-control" placeholder="" value="@(charger.MaxPower)" />
+            </div>
+            <div class="mb-3">
+                <label for="" class="form-label">
+                    Total battery capacity
+                    (kWh)
+                </label>
+                <input type="number" name="MaxEnergy" class="form-control" placeholder="" value="@(charger.MaxEnergy)" />
+            </div>
+            <div class="mb-3">
+                <input type="button" onclick="saveForm('chargerForm')" class="btn btn-primary" value="Save" />
+            </div>
+        </form>
     </div>
 </div>
 <div class="modal fade" id="loadModal" tabindex="-1" aria-labelledby="loadModalLabel" aria-hidden="true">

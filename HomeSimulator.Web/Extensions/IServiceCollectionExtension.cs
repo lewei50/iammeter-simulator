@@ -22,6 +22,7 @@ public static class IServiceCollectionExtensions
         services.AddScoped<MeterService>();
         services.AddScoped<LoadService>();
         services.AddScoped<InverterService>();
+        services.AddSingleton<OCPPSocketBackgroundService>();
 
         // basic auth
         services.AddAuthentication(BasicAuthenticationScheme.DefaultScheme)

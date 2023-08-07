@@ -12,17 +12,20 @@ public class HomeController : Controller
     private readonly MyContext _myContext;
     private readonly InverterService _inverterService;
     private readonly LoadService _loadService;
+    private readonly OCPPSocketBackgroundService _oCPPSocketBackgroundService;
 
-    public HomeController(ILogger<HomeController> logger, MyContext myContext, InverterService inverterService, LoadService loadService)
+    public HomeController(ILogger<HomeController> logger, MyContext myContext, InverterService inverterService, LoadService loadService, OCPPSocketBackgroundService oCPPSocketBackgroundService)
     {
         _logger = logger;
         _myContext = myContext;
         _inverterService = inverterService;
         _loadService = loadService;
+        _oCPPSocketBackgroundService = oCPPSocketBackgroundService;
     }
 
     public IActionResult Index()
     {
+        _logger.LogInformation("Index");
         return View();
     }
 

@@ -341,4 +341,4 @@ healthchecksdb
 .vscode
 /HomeSimulator.Web/data/data.db-shm
 /HomeSimulator.Web/data/data.db-wal
-/HomeSimulator.Web/data/.DS_Store
+.DS_Store

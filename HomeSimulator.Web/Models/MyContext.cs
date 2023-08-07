@@ -34,6 +34,16 @@ public class MyContext : DbContext
             ModifyTime = DateTime.Now
         });
 
+        modelBuilder.Entity<Charger>().HasData(new Charger
+        {
+            Id = 1,
+            OCPPServer = "ws://ocpp.iammeter.com/ocpp",
+            ChargePointId = "",
+            IdTag = CommonHelper.GetNewGuidString().Substring(0, 8),
+            MaxPower = 70000,
+            MaxEnergy = 70
+        });
+
         modelBuilder.Entity<Inverter>().HasData(new Inverter
         {
             Id = 1,
@@ -139,6 +149,7 @@ public class MyContext : DbContext
     }
 
     public DbSet<Config> Configs { get; set; }
+    public DbSet<Charger> Chargers { get; set; }
     public DbSet<ApiHistory> ApiHistory { get; set; }
     public DbSet<Inverter> Inverters { get; set; }
     public DbSet<Load> Loads { get; set; }

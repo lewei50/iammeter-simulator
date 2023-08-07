@@ -1,4 +1,6 @@
+@using HomeSimulator.Services;
 @inject MyContext _myContext;
+@inject OCPPSocketBackgroundService _ocppSocketBackgroundService;
 @{
     Layout = null;
     ViewData["Title"] = "Overview";
@@ -7,6 +9,7 @@
     var b = _myContext.Meters.OrderBy(o => o.Id).FirstOrDefault(o => o.Name == "B");
     var c = _myContext.Meters.OrderBy(o => o.Id).FirstOrDefault(o => o.Name == "C");
     var loads = _myContext.Loads.ToList();
+    var charger = _myContext.Chargers.FirstOrDefault()??new Charger();
 }
 
 <h4>Meter (@a.LastUpdateTime)</h4>
@@ -52,6 +55,68 @@
         </tr>
     </tbody>
 </table>
+<h4>
+    Charger
+</h4>
+@if(_ocppSocketBackgroundService.IsConnected){
+<table class="table table-bordered" style="background-color:#@(_ocppSocketBackgroundService.Charger.IsCharging?"edf8f4":"efefef")">
+    <tr>
+        <th >ID </th>
+        <th >
+            @if (_ocppSocketBackgroundService.Charger.LimitPower != null)
+            {
+                <span>Power Limit</span>
+            }
+            else
+            {
+                <span>Max Power</span>
+            }
+        </th>
+        <td rowspan="2" align="center" valign="middle">
+            @if (_ocppSocketBackgroundService.Charger.IsCharging == false)
+            {
+                <a href="#" class="btn btn-sm btn-primary" onclick="startTransaction()">Start Charging</a>
+            }
+            else
+            {
+                <a href="#" class="btn btn-sm btn-danger" onclick="stopTransaction()">Stop Charging</a>
+            }
+        </td>
+        @if (_ocppSocketBackgroundService.Charger.IsCharging)
+        {
+            <th>Voltage</th>
+            <th>Current</th>
+            <th>Power</th>
+            <th>Energy</th>
+            <th>SOC</th>
+            
+        }
+    </tr>
+    <tr>
+        <td>
+            @charger.ChargePointId
+        </td>
+        <td>
+            @(_ocppSocketBackgroundService.Charger.LimitPower == null ? _ocppSocketBackgroundService.Charger.MaxPower : _ocppSocketBackgroundService.Charger.LimitPower)
+            W
+        </td>
+        @if (_ocppSocketBackgroundService.Charger.IsCharging)
+        {
+            <td>@_ocppSocketBackgroundService.Charger.Voltage.ToDecimalNum(0) V</td>
+            <td>@_ocppSocketBackgroundService.Charger.Current.ToDecimalNum(1) A</td>
+            <td>@_ocppSocketBackgroundService.Charger.Power.ToDecimalNum(0) W</td>
+            <td>@((_ocppSocketBackgroundService.Charger.Energy/1000).ToDecimalNum(3)) kWh</td>
+            <td>@_ocppSocketBackgroundService.Charger.SOC.ToDecimalNum() %</td>
+        }
+    </tr>
+    </table>
+}
+else
+{
+    <p>
+        Unable to connect to ocpp server, please check Settings.
+    </p>
+}
 <h4>Loads</h4>
 <div>
     @foreach (var load in loads)

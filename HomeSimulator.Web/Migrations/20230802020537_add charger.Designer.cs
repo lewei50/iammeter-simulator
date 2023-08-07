@@ -3,6 +3,7 @@ using System;
 using HomeSimulator.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeSimulator.Web.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20230802020537_add charger")]
+    partial class addcharger
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.10");
@@ -53,6 +55,7 @@ namespace HomeSimulator.Web.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ChargePointId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal?>("Current")
@@ -62,6 +65,7 @@ namespace HomeSimulator.Web.Migrations
                         .HasColumnType("decimal(13,3)");
 
                     b.Property<string>("IdTag")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("LastUpdateTime")
@@ -92,6 +96,7 @@ namespace HomeSimulator.Web.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("OCPPServer")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal?>("Power")
@@ -114,8 +119,8 @@ namespace HomeSimulator.Web.Migrations
                         new
                         {
                             Id = 1,
-                            ChargePointId = "",
-                            IdTag = "ad4db7c3",
+                            ChargePointId = "bc74c304657547b2b3b948b0449e23c8",
+                            IdTag = "4e37400b",
                             MaxEnergy = 70m,
                             MaxPower = 70000m,
                             OCPPServer = "ws://ocpp.iammeter.com/ocpp",
@@ -152,8 +157,8 @@ namespace HomeSimulator.Web.Migrations
                         new
                         {
                             Id = 1L,
-                            AccessToken = "8d752795b1f94e918f0cb847ced36091",
-                            ModifyTime = new DateTime(2023, 8, 7, 17, 36, 25, 656, DateTimeKind.Local).AddTicks(2295),
+                            AccessToken = "b9be574521064c5488b1d392aa786546",
+                            ModifyTime = new DateTime(2023, 8, 2, 10, 5, 36, 885, DateTimeKind.Local).AddTicks(6840),
                             Password = "jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=",
                             SN = "NeedToBeSet",
                             Username = "admin"

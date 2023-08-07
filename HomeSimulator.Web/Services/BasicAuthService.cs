@@ -114,7 +114,7 @@ public class BasicAuthenticationMiddleware
      public async Task Invoke(HttpContext httpContext, IAuthenticationService authenticationService)
      {
        var authenticated = await authenticationService.AuthenticateAsync(httpContext, BasicAuthenticationScheme.DefaultScheme);
-       _logger.LogInformation("Access Status：" + authenticated.Succeeded);
+       //_logger.LogInformation("Access Status：" + authenticated.Succeeded);
        if (!authenticated.Succeeded)
        {
            await authenticationService.ChallengeAsync(httpContext, BasicAuthenticationScheme.DefaultScheme, new AuthenticationProperties { });

@@ -1,22 +1,37 @@
-﻿
-@{
-  ViewData["Title"] = "Overview";
-  ViewBag.MenuName = "index";
+﻿@{
+    ViewData["Title"] = "Overview";
+    ViewBag.MenuName = "index";
 }
 <script>
-  function setStatus(id, status) {
-    $.getJSON('/action/loadstatus/' + id + '?status=' + status, function (r) {
-      showResult(r, reloadIndex);
+    function setStatus(id, status) {
+        $.getJSON('/action/loadstatus/' + id + '?status=' + status, function (r) {
+            showResult(r, reloadIndex);
+        });
+    }
+    $(function () {
+        setInterval(reloadIndex, 6000);
+        reloadIndex();
     });
-  }
-  $(function(){
-    setInterval(reloadIndex,6000);
-    reloadIndex();
-  });
-  function reloadIndex(){
-    $('#indexDiv').load('/home/indexpartial');
-  }
+    function reloadIndex() {
+        $('#indexDiv').load('/home/indexpartial');
+    }
+    function startTransaction() {
+        $.getJSON('/action/startTransaction', function (r) {
+            showResult(r, reloadIndex);
+        });
+    }
+    function stopTransaction() {
+        $.getJSON('/action/stopTransaction', function (r) {
+            showResult(r, reloadIndex);
+        });
+    }
 </script>
+<style>
+    h4 {
+        font-weight: bold;
+        border-bottom: dotted #eeeeee 1px;
+        margin: 10px;
+    }
+</style>
 <div id="indexDiv" class="container">
-  
 </div>

@@ -37,7 +37,7 @@ public static class OjbectExtensions
         return (int)(t - date).TotalSeconds;
     }
 
-    public static decimal? ToDecimalNum(this object o, int count = 2)
+    public static decimal? ToDecimalNum(this object? o, int count = 2)
     {
         return o.ToDecimalString(count).ToNullDecimal();
     }
