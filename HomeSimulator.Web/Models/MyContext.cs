@@ -40,8 +40,8 @@ public class MyContext : DbContext
             OCPPServer = "ws://ocpp.iammeter.com/ocpp",
             ChargePointId = "",
             IdTag = CommonHelper.GetNewGuidString().Substring(0, 8),
-            MaxPower = 70000,
-            MaxEnergy = 70
+            MaxPower = 10000,
+            MaxEnergy = 50
         });
 
         modelBuilder.Entity<Inverter>().HasData(new Inverter

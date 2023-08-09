@@ -235,7 +235,7 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
         Charger.Power = null;
         Charger.Energy = Charger.MeterStart;
         Charger.SOC = null;
-        Charger.LimitPower = null;
+        //Charger.LimitPower = null;
         Charger.LimitPowerExpiredTime = null;
         Charger.MeterStop = null;
         Charger.MeterStopTime = null;
@@ -268,12 +268,12 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
         {
             maxPower = maxPower * 0.3m;
         }
-        if (Charger.LimitPower != null && Charger.LimitPower < maxPower && Charger.LimitPowerExpiredTime > now)
+        if (Charger.IsPowerLimiting && Charger.LimitPower < maxPower)
         {
             maxPower = Charger.LimitPower.Value;
         }
-        var randomPower = CommonHelper.GetRandomNumber(maxPower * 0.9m, maxPower);
-        var randomVoltage = CommonHelper.GetRandomNumber(220 * 0.95m, 220 * 1.05m);
+        var randomPower = CommonHelper.GetRandomNumber(maxPower * 0.95m, maxPower);
+        var randomVoltage = CommonHelper.GetRandomNumber(220 * 0.98m, 220 * 1.02m);
         var energy = 0m;
 
         var avgPower = maxPower;
@@ -477,8 +477,20 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
             case "GetConfiguration":
                 errorCode = HandleGetConfiguration(msgIn, msgOut);
                 break;
+            case "ChangeConfiguration":
+                errorCode = HandleChangeConfiguration(msgIn, msgOut);
+                break;
+            case "ChangeAvailability":
+                errorCode = HandleChangeAvailability(msgIn, msgOut);
+                break;
             case "SetChargingProfile":
                 errorCode = HandleSetChargingProfile(msgIn, msgOut);
+                break;
+            case "RemoteStartTransaction":
+                errorCode = HandleRemoteStartTransaction(msgIn, msgOut);
+                break;
+            case "RemoteStopTransaction":
+                errorCode = HandleRemoteStopTransaction(msgIn, msgOut);
                 break;
             default:
                 errorCode = ErrorCodes.NotSupported;
@@ -495,21 +507,98 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
         return msgOut;
     }
 
-    private string? HandleGetConfiguration(OCPPMessage msgIn, OCPPMessage msgOut)
+    private string? HandleRemoteStopTransaction(OCPPMessage msgIn, OCPPMessage msgOut)
     {
         string errorCode = null;
 
-        var response = new GetConfigurationResponse();
-        response.ConfigurationKey = new List<ConfigurationKey>() {
-         new ConfigurationKey{ Key="ChargingScheduleAllowedChargingRateUnit", Value="Power",Readonly=true }
-        };
+        var response = new RemoteStopTransactionResponse();
+        response.Status = RemoteStopTransactionResponseStatus.Accepted;
 
+        msgOut.JsonPayload = JsonConvert.SerializeObject(response);
+
+        var timer = new Timer((object? obj) => { StopTransaction(); }, null, 2000, Timeout.Infinite);
+
+        return errorCode;
+    }
+
+    private string? HandleRemoteStartTransaction(OCPPMessage msgIn, OCPPMessage msgOut)
+    {
+        string errorCode = null;
+
+        var response = new RemoteStartTransactionResponse();
+        response.Status = RemoteStartTransactionResponseStatus.Accepted;
+
+        msgOut.JsonPayload = JsonConvert.SerializeObject(response);
+
+        var timer = new Timer((object? obj) => { StartTransaction(); }, null, 2000, Timeout.Infinite);
+
+        return errorCode;
+    }
+
+    private string? HandleChangeConfiguration(OCPPMessage msgIn, OCPPMessage msgOut)
+    {
+        string errorCode = null;
+
+        var response = new ChangeConfigurationResponse();
+        response.Status = ChangeConfigurationResponseStatus.Accepted;
+
+        msgOut.JsonPayload = JsonConvert.SerializeObject(response);
+        return errorCode;
+    }
+
+    private string? HandleChangeAvailability(OCPPMessage msgIn, OCPPMessage msgOut)
+    {
+        string errorCode = null;
+        var request = JsonConvert.DeserializeObject<ChangeAvailabilityRequest>(msgIn.JsonPayload);
+        if (request != null)
+        {
+            if (request.Type == ChangeAvailabilityRequestType.Operative)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+        var response = new ChangeAvailabilityResponse();
+        response.Status = ChangeAvailabilityResponseStatus.Scheduled;
+
+        msgOut.JsonPayload = JsonConvert.SerializeObject(response);
+        return errorCode;
+    }
+
+    private string? HandleGetConfiguration(OCPPMessage msgIn, OCPPMessage msgOut)
+    {
+        string errorCode = null;
+        var request = JsonConvert.DeserializeObject<GetConfigurationRequest>(msgIn.JsonPayload);
+        var response = new GetConfigurationResponse();
+        var list = new List<ConfigurationKey>() {
+         new ConfigurationKey{ Key="ChargingScheduleAllowedChargingRateUnit", Value="Current", Readonly=true },
+         new ConfigurationKey{ Key="SupportedFeatureProfiles", Value="Core,FirmwareManagement,LocalAuthListManagement,RemoteTrigger,Reservation,SmartCharging",Readonly=true },
+         new ConfigurationKey{ Key="NumberOfConnectors", Value="1",Readonly=true },
+         new ConfigurationKey{ Key="HeartbeatInterval", Value="60",Readonly=true },
+         new ConfigurationKey{Key="AuthorizeRemoteTxRequests",Value="true", Readonly=false},
+         new ConfigurationKey{ Key="ChargeProfileMaxStackLevel", Value="20",Readonly=true },
+         new ConfigurationKey{Key="WebSocketPingInterval",Value="30",Readonly=true },
+         new ConfigurationKey{Key="MeterValueSampleInterval",Value="60",Readonly=true },
+         new ConfigurationKey{ Key="ClockAlignedDataInterval",Value="0",Readonly=true},
+         new ConfigurationKey{ Key="MeterValuesSampledData", Value="Current.Import,Energy.Active.Import.Register,Power.Active.Import,SoC,Temperature,Voltage",Readonly=true },
+        };
+        if (request != null && request.Key != null && request.Key.Count > 0)
+            response.ConfigurationKey = list.Where(o => request.Key.Contains(o.Key)).ToList();
+        else
+            response.ConfigurationKey = list;
         msgOut.JsonPayload = JsonConvert.SerializeObject(response);
         return errorCode;
     }
 
     private string? HandleSetChargingProfile(OCPPMessage msgIn, OCPPMessage msgOut)
     {
+        // ha的ocpp设置 json[2,"5eaa10f3-f4fe-4b6b-8369-b822ebac5d3a","SetChargingProfile",
+        //{ "connectorId":0,"csChargingProfiles":{ "chargingProfileId":8,"stackLevel":20,"chargingProfileKind":"Relative","chargingProfilePurpose":"ChargePointMaxProfile","chargingSchedule":{ "chargingRateUnit":"A","chargingSchedulePeriod":[{ "startPeriod":0,"limit":11.0}]} } }]
+
+        //{"connectorId":0,"csChargingProfiles":{"chargingProfileId":8,"stackLevel":20,"chargingProfileKind":"Relative","chargingProfilePurpose":"ChargePointMaxProfile","chargingSchedule":{"chargingRateUnit":"A","chargingSchedulePeriod":[{"startPeriod":0,"limit":9.0}]}}}
         string errorCode = null;
         var request = JsonConvert.DeserializeObject<SetChargingProfileRequest>(msgIn.JsonPayload);
         var limit = request.CsChargingProfiles.ChargingSchedule.ChargingSchedulePeriod.FirstOrDefault()?.Limit;
@@ -522,7 +611,8 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
         {
             Charger.LimitPower = (decimal?)limit * (Charger.Voltage ?? 220);
         }
-        Charger.LimitPowerExpiredTime = DateTime.Now.AddSeconds(request.CsChargingProfiles.ChargingSchedule.Duration);
+
+        //Charger.LimitPowerExpiredTime = DateTime.Now.AddSeconds(request.CsChargingProfiles.ChargingSchedule.Duration ?? 3600 * 24);
         var response = new SetChargingProfileResponse();
         response.Status = SetChargingProfileResponseStatus.Accepted;
         msgOut.JsonPayload = JsonConvert.SerializeObject(response);

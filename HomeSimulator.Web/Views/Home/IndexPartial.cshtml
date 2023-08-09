@@ -63,7 +63,7 @@
     <tr>
         <th >ID </th>
         <th >
-            @if (_ocppSocketBackgroundService.Charger.LimitPower != null)
+            @if (_ocppSocketBackgroundService.Charger.IsPowerLimiting)
             {
                 <span>Power Limit</span>
             }
@@ -97,7 +97,7 @@
             @charger.ChargePointId
         </td>
         <td>
-            @(_ocppSocketBackgroundService.Charger.LimitPower == null ? _ocppSocketBackgroundService.Charger.MaxPower : _ocppSocketBackgroundService.Charger.LimitPower)
+            @((!_ocppSocketBackgroundService.Charger.IsPowerLimiting ? _ocppSocketBackgroundService.Charger.MaxPower : _ocppSocketBackgroundService.Charger.LimitPower).ToDecimalNum(0))
             W
         </td>
         @if (_ocppSocketBackgroundService.Charger.IsCharging)

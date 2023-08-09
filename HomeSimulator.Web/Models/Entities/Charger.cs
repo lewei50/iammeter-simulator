@@ -70,4 +70,11 @@ public class Charger
         }
     }
 
+    public bool IsPowerLimiting
+    {
+        get
+        {
+            return LimitPower != null;// && LimitPowerExpiredTime != null && LimitPowerExpiredTime > DateTime.Now;
+        }
+    }
 }
