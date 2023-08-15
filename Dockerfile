@@ -10,7 +10,8 @@ RUN dotnet restore
 # copy everything else and build app
 COPY HomeSimulator.Web/. ./HomeSimulator.Web/
 WORKDIR /source/HomeSimulator.Web
-RUN dotnet publish -c release -o /app --no-restore
+# RUN dotnet publish -c release -o /app --no-restore
+RUN dotnet publish -c release --no-restore --property:PublishDir=/app
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
