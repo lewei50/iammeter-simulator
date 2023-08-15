@@ -272,8 +272,9 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
         {
             maxPower = Charger.LimitPower.Value;
         }
-        var randomPower = CommonHelper.GetRandomNumber(maxPower * 0.95m, maxPower);
-        var randomVoltage = CommonHelper.GetRandomNumber(220 * 0.98m, 220 * 1.02m);
+        var randomPower = maxPower - CommonHelper.GetRandomNumber(0, 50);
+        if(randomPower<0) randomPower = 0;
+        var randomVoltage = 230;// CommonHelper.GetRandomNumber(220 * 0.98m, 220 * 1.02m);
         var energy = 0m;
 
         var avgPower = maxPower;
