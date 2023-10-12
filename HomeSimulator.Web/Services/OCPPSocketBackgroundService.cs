@@ -493,6 +493,12 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
             case "RemoteStopTransaction":
                 errorCode = HandleRemoteStopTransaction(msgIn, msgOut);
                 break;
+            case "UnlockConnector":
+                errorCode = HandleUnlockConnector(msgIn, msgOut);
+                break;
+            case "Reset":
+                errorCode = HandleReset(msgIn, msgOut);
+                break;
             default:
                 errorCode = ErrorCodes.NotSupported;
                 break;
@@ -506,6 +512,30 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
         }
 
         return msgOut;
+    }
+
+    private string? HandleReset(OCPPMessage msgIn, OCPPMessage msgOut)
+    {
+        string errorCode = null;
+
+        var response = new ResetResponse();
+        response.Status = ResetResponseStatus.Accepted;
+
+        msgOut.JsonPayload = JsonConvert.SerializeObject(response);
+
+        return errorCode;
+    }
+
+    private string? HandleUnlockConnector(OCPPMessage msgIn, OCPPMessage msgOut)
+    {
+        string errorCode = null;
+
+        var response = new UnlockConnectorResponse();
+        response.Status = UnlockConnectorResponseStatus.Unlocked;
+
+        msgOut.JsonPayload = JsonConvert.SerializeObject(response);
+
+        return errorCode;
     }
 
     private string? HandleRemoteStopTransaction(OCPPMessage msgIn, OCPPMessage msgOut)

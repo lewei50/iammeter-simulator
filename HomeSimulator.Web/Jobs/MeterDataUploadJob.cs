@@ -8,9 +8,12 @@ using System.Text;
 public class MeterDataUploadJob : IJob
 {
     private readonly MeterService _meterService;
-    public MeterDataUploadJob(MeterService meterService)
+    private readonly ILogger<MeterDataUploadJob> logger;
+
+    public MeterDataUploadJob(MeterService meterService, ILogger<MeterDataUploadJob> _logger)
     {
         _meterService = meterService;
+        logger = _logger;
     }
     public async Task Execute(IJobExecutionContext context)
     {
@@ -20,9 +23,10 @@ public class MeterDataUploadJob : IJob
             await UploadToCloud(rt);
     }
 
+    //const string CloudUrlRoot = "http://localhost:5050";
     //const string CloudUrlRoot = "http://localhost:27106";
     const string CloudUrlRoot = "https://www.iammeter.com";
-    public static async Task<Result?> UploadToCloud(MeterUploadDTO data)
+    public async Task<Result?> UploadToCloud(MeterUploadDTO data)
     {
         try
         {
@@ -37,9 +41,13 @@ public class MeterDataUploadJob : IJob
             {
                 return new Result { Message = "Invalid data." };
             }
+
+
+
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "上传到iammeter出错");
             return new Result { Message = ex.Message };
         }
 
