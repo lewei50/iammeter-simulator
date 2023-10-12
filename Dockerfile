@@ -17,5 +17,5 @@ RUN dotnet publish "HomeSimulator.Web.csproj" -c Release -o /app/publish /p:UseA
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "HomeSimulator.Web.dll"]
