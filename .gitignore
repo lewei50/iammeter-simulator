@@ -342,3 +342,4 @@ healthchecksdb
 /HomeSimulator.Web/data/data.db-shm
 /HomeSimulator.Web/data/data.db-wal
 .DS_Store
+/HomeSimulator.Web/data/data.db
