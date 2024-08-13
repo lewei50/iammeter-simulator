@@ -28,6 +28,7 @@ public class MyContext : DbContext
         {
             Id = 1,
             SN = "NeedToBeSet",
+            CloudUrlRoot = "https://www.iammeter.com",
             Username = "admin",
             Password = "admin".ToSHA256String(),
             AccessToken = CommonHelper.GetNewGuidString(),

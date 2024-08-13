@@ -7,7 +7,8 @@ public class Config
 {
     public long Id { get; set; }
     public string? SN { get; set; }
-
+    // 上传地址
+    public string? CloudUrlRoot { get; set; }
     public string? Username{get;set;}
 
     public string? Password{get;set;}

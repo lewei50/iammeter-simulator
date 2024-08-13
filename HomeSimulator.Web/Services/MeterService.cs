@@ -9,6 +9,7 @@ public class MeterService
 
     private readonly InverterService _inverterService;
     private readonly LoadService _loadService;
+
     public MeterService(MyContext myContext, InverterService inverterService, LoadService loadService)
     {
         _myContext = myContext;

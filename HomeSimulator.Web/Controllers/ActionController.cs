@@ -41,7 +41,7 @@ public class ActionController : Controller
             if (string.IsNullOrEmpty(data.Password) == false)
                 entity.Password = data.Password.ToSHA256String();
             entity.SN = data.SN;
-
+            entity.CloudUrlRoot = data.CloudUrlRoot;
             entity.ModifyTime = DateTime.Now;
             _myContext.SaveChanges();
             result.Successful = true;
