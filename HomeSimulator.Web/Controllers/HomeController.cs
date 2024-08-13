@@ -86,6 +86,12 @@ public class HomeController : Controller
         return Content(sb.ToString());
     }
 
+    public IActionResult setPower(decimal power)
+    {
+        _oCPPSocketBackgroundService.Charger.LimitPower = power;
+        return Content("ok");
+    }
+
 
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

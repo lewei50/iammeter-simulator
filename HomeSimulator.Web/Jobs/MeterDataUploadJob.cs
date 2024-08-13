@@ -24,8 +24,8 @@ public class MeterDataUploadJob : IJob
     }
 
     //const string CloudUrlRoot = "http://localhost:5050";
-    //const string CloudUrlRoot = "http://localhost:27106";
-    const string CloudUrlRoot = "https://www.iammeter.com";
+    const string CloudUrlRoot = "http://localhost:27106";
+    //const string CloudUrlRoot = "https://www.iammeter.com";
     public async Task<Result?> UploadToCloud(MeterUploadDTO data)
     {
         try

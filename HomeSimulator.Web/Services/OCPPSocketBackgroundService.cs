@@ -273,7 +273,7 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
             maxPower = Charger.LimitPower.Value;
         }
         var randomPower = maxPower - CommonHelper.GetRandomNumber(0, 50);
-        if(randomPower<0) randomPower = 0;
+        if (randomPower < 0) randomPower = 0;
         var randomVoltage = 230;// CommonHelper.GetRandomNumber(220 * 0.98m, 220 * 1.02m);
         var energy = 0m;
 
@@ -613,9 +613,10 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
          new ConfigurationKey{ Key="ChargeProfileMaxStackLevel", Value="20",Readonly=true },
          new ConfigurationKey{Key="WebSocketPingInterval",Value="30",Readonly=true },
          new ConfigurationKey{Key="MeterValueSampleInterval",Value="60",Readonly=true },
+          new ConfigurationKey{Key="AuthEnabled",Value="false",Readonly=false },
          new ConfigurationKey{ Key="ClockAlignedDataInterval",Value="0",Readonly=true},
          new ConfigurationKey{ Key="MeterValuesSampledData", Value="Current.Import,Energy.Active.Import.Register,Power.Active.Import,SoC,Temperature,Voltage",Readonly=true },
-        };
+        }; 
         if (request != null && request.Key != null && request.Key.Count > 0)
             response.ConfigurationKey = list.Where(o => request.Key.Contains(o.Key)).ToList();
         else
@@ -702,10 +703,13 @@ public class OCPPSocketBackgroundService /*: IHostedService, IDisposable*/
     {
         var request = new BootNotificationRequest();
 
-        request.ChargePointSerialNumber = "Test1234";
-        request.ChargePointModel = "imeter-test";
-        request.ChargePointVendor = "imeter";
-        request.FirmwareVersion = "0.1.0";
+        request.ChargePointSerialNumber = "062370";
+        //request.ChargePointModel = "PLP1-M-2-4";
+        //request.ChargePointVendor = "Wall Box Chargers";
+        request.ChargePointModel = "MaxiChargerAC";
+        request.ChargePointVendor = "Autel";
+
+        request.FirmwareVersion = "5.3.20";
         string jsonResetRequest = JsonConvert.SerializeObject(request);
         OCPPMessage msgOut = new OCPPMessage();
         msgOut.MessageType = "2";
